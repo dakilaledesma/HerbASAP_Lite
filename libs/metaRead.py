@@ -62,6 +62,7 @@ class MetaRead:
         """
         # prepare the user_comments
         static_exif = copy.deepcopy(self.static_exif)
+        print(static_exif.keys())
         static_exif[270].update(addtl_user_comments)
         # jsonize the user_comments
         user_comments = json.dumps(static_exif[270])
