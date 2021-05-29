@@ -1,20 +1,6 @@
-import tkinter as tk
-from tkinter import filedialog
-import json
-from joblib import Parallel, delayed
-from glob import glob
-import multiprocessing
-import os
-
-from libs.bcRead import bcRead
-from libs.blurDetect import blurDetect
-from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
-from libs.scaleRead import ScaleRead
-from libs.metaRead import MetaRead
-from libs.helper_functions import *
 
 settings = {
-    "input_folder": "D:/bruh",
+    "input_folder": "D:/bruh2",
     "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
     "process_crc": "T",
     "barcode_rename": "T",
@@ -277,27 +263,49 @@ def process():
         #     compute(file)
         print(idx, len(file_batches))
 
+    print("done")
 
-print("Welcome to HerbASAP Lite")
-while True:
-    # read_settings()
-    build_menu_string()
-    _input = str(input("What would you like to do?: ")).upper()
 
-    if _input == 'Q':
-        break
-    elif _input == 'R':
-        continue
-    elif _input == 'P':
-        process()
-    elif _input in [str(v) for v in range(1, 3)]:
-        if _input == '1':
-            root = tk.Tk()
-            set_input_folder()
-            root.destroy()
-        elif _input == '2':
-            root = tk.Tk()
-            set_output_folder()
-            root.destroy()
+print("Loading...")
+import tkinter as tk
+from tkinter import filedialog
+import json
+from joblib import Parallel, delayed
+from glob import glob
+import multiprocessing
+import os
 
-        # write_settings()
+from libs.bcRead import bcRead
+from libs.blurDetect import blurDetect
+from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
+from libs.scaleRead import ScaleRead
+from libs.metaRead import MetaRead
+from libs.helper_functions import *
+print("Welcome to HerbASAP Lite v0.0.1")
+
+if __name__ == "__main__":
+    
+
+
+    while True:
+        # read_settings()
+        build_menu_string()
+        _input = str(input("What would you like to do?: ")).upper()
+
+        if _input == 'Q':
+            break
+        elif _input == 'R':
+            continue
+        elif _input == 'P':
+            process()
+        elif _input in [str(v) for v in range(1, 3)]:
+            if _input == '1':
+                root = tk.Tk()
+                set_input_folder()
+                root.destroy()
+            elif _input == '2':
+                root = tk.Tk()
+                set_output_folder()
+                root.destroy()
+
+            # write_settings()
