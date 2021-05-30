@@ -37,7 +37,10 @@
 
         .right {
             width: 50%;
-            min-height: 100vh;
+            min-height: 80vh;
+            max-height: 80vh;
+            overflow-y: scroll;
+            font-family: monospace;
         }
 
         .row:after {
@@ -46,60 +49,48 @@
             clear: both;
         }
 
-        .center_logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: auto;
-            background: #FFFFFF;
-        }
-
-        #load_logo {
-            max-height: 50vh;
-            width: auto;
-            animation-name: fade_logo;
-            animation-duration: 2s;
-        }
-
-        @keyframes fade_logo {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous"></script>
+
 </head>
 
 <body>
 <div id="interface">
-    <div class="center_logo">
-        <img id="load_logo" src="../static/images/icon_a.png" alt="HerbASAP Logo">
+    <div class="row">
+        <div class="column left">
+            <br>
+            <img style="max-width: 70%; height: auto;" src="../static/images/icon_a.png" alt="HerbASAP Logo">
+        </div>
+        <div class="column middle">
+            <a href="javascript:;" id="process_images">Process</a>
+        </div>
+        <div class="column right">
+            <p id="consoleout"></p>
+        </div>
     </div>
 </div>
 </body>
 
 <script>
     $(document).ready(function () {
-        $.ajax({
-            url: "/load",
-            type: "get",
-            async: true,
-            success: function (data) {
-                $('#interface').html(data.return_string);
-                var socket = io.connect('http://127.0.0.1:6969/stream')
 
-                socket.on('message', function(msg){
-                  $('#consoleout').append(msg);
-                })
-
-                socket.emit('message', {data: "start"});
-            }
-        });
     });
+
+    $('#interface').on('click', '#process_images', function () {
+        var socket = io.connect('http://127.0.0.1:6969/stream')
+        socket.on('message', function (msg) {
+            if (msg.includes("[HAL-DONE]")){
+                socket.disconnect();
+            }
+            else if (msg.includes("[HAL-SIGM]")){
+                $('#consoleout').append(msg + "<br>");
+            }
+        })
+        socket.emit('message', {data: "start"});
+    });
+
 </script>
 </html>

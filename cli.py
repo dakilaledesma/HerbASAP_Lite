@@ -1,6 +1,6 @@
 
 settings = {
-    "input_folder": "D:/bruh2",
+    "input_folder": "C:/Users/Dakila/Pictures/HA/Input",
     "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
     "process_crc": "T",
     "barcode_rename": "T",
@@ -31,9 +31,12 @@ def build_menu_string():
         Q: Quit
     """
 
-    print(out_string)
+    return out_string
 
-    pass
+
+def cli_print(message, running_interface=True):
+    if not running_interface:
+        print(message)
 
 
 def set_input_folder():
@@ -64,28 +67,30 @@ def process():
     global settings
 
     """
-    Getting number of cores for multiprocessing
+    Getting number of workers for multiprocessing, minimum 2 workers
     """
-    num_cores = multiprocessing.cpu_count() - 2
-    # num_cores = 2
+    num_workers = max([2, multiprocessing.cpu_count() - 2])
+
     """
-    Shaping the data to follow the number of cores for multiprocessing
+    Shaping the data to follow the number of workers for multiprocessing
     """
     files = glob(f'{settings["input_folder"]}/*.CR2')
     print(f"Found {len(files)} file(s)")
 
-    file_batches = []
-    while True:
-        if len(files) == 0:
-            break
-        elif 0 < len(files) < num_cores:
-            file_batches.append(files)
-            break
 
-        file_batches.append(files[:num_cores])
-        del files[:num_cores]
 
-    def compute(file):
+    # file_batches = []
+    # while True:
+    #     if len(files) == 0:
+    #         break
+    #     elif 0 < len(files) < num_workers:
+    #         file_batches.append(files)
+    #         break
+    #
+    #     file_batches.append(files[:num_workers])
+    #     del files[:num_workers]
+
+    def compute(idx, file):
         """
         Function for computing/processing the images. This function gets fed into joblib, which gives this function to
         different threads on the CPU. This allows for multiple images to be processed at once.
@@ -257,55 +262,73 @@ def process():
         cv2.imwrite(final_filename, im)
         # read_metadata.set_dst_exif(meta_data, final_filename)
 
-    for idx, file_batch in enumerate(file_batches):
-        out = Parallel(n_jobs=num_cores)(delayed(compute)(file) for file in file_batch)
-        # for file in file_batch:
-        #     compute(file)
-        print(idx, len(file_batches))
+        print(f"[HAL-SIGM]::{names}.jpg finished ({idx}/{len(files)})")
 
-    print("done")
+    """
+    The joblib Parallel function is written in this way so that it reuses workers vs. create/destroy.
+    """
 
+    Parallel(n_jobs=num_workers)(delayed(compute)(idx, file) for idx, file in enumerate(files))
 
-print("Loading...")
-import tkinter as tk
-from tkinter import filedialog
-import json
-from joblib import Parallel, delayed
-from glob import glob
-import multiprocessing
-import os
+    # with Parallel(n_jobs=2, verbose=11) as parallel:
+    #     for idx, file_batch in enumerate(file_batches):
+    #         out = parallel(delayed(compute)(file) for file in file_batch)
+    #         print(idx, len(file_batches))
 
-from libs.bcRead import bcRead
-from libs.blurDetect import blurDetect
-from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
-from libs.scaleRead import ScaleRead
-from libs.metaRead import MetaRead
-from libs.helper_functions import *
-print("Welcome to HerbASAP Lite v0.0.1")
+    # for idx, file_batch in enumerate(file_batches):
+    #     out = Parallel(n_jobs=num_workers)(delayed(compute)(file) for file in file_batch)
+    #     # for file in file_batch:
+    #     #     compute(file)
+    #     print(idx, len(file_batches))
+
+    print(f"[HAL-DONE]")
 
 if __name__ == "__main__":
-    
+    import argparse
+    parser = argparse.ArgumentParser(description='CLI/Interface Parser')
+    parser.add_argument('--interface', dest='interface', action='store_true')
+    parser.set_defaults(interface=False)
 
+    parsed_args = parser.parse_args()
+    running_interface = parsed_args.interface
+
+    cli_print("Loading...", running_interface=running_interface)
+    import json
+    from joblib import Parallel, delayed
+    from glob import glob
+    import multiprocessing
+    import os
+
+    from libs.bcRead import bcRead
+    from libs.blurDetect import blurDetect
+    from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
+    from libs.scaleRead import ScaleRead
+    from libs.metaRead import MetaRead
+    from libs.helper_functions import *
+    cli_print("Welcome to HerbASAP Lite v0.0.1", running_interface=running_interface)
 
     while True:
         # read_settings()
-        build_menu_string()
-        _input = str(input("What would you like to do?: ")).upper()
-
-        if _input == 'Q':
-            break
-        elif _input == 'R':
-            continue
-        elif _input == 'P':
+        cli_print(build_menu_string(), running_interface=running_interface)
+        if running_interface:
             process()
-        elif _input in [str(v) for v in range(1, 3)]:
-            if _input == '1':
-                root = tk.Tk()
-                set_input_folder()
-                root.destroy()
-            elif _input == '2':
-                root = tk.Tk()
-                set_output_folder()
-                root.destroy()
+        else:
+            _input = str(input("What would you like to do?: ")).upper()
 
-            # write_settings()
+            if _input == 'Q':
+                break
+            elif _input == 'R':
+                continue
+            elif _input == 'P':
+                process()
+            elif _input in [str(v) for v in range(1, 3)]:
+                if _input == '1':
+                    root = tk.Tk()
+                    set_input_folder()
+                    root.destroy()
+                elif _input == '2':
+                    root = tk.Tk()
+                    set_output_folder()
+                    root.destroy()
+
+                # write_settings()
