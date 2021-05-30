@@ -262,7 +262,7 @@ def process():
         cv2.imwrite(final_filename, im)
         # read_metadata.set_dst_exif(meta_data, final_filename)
 
-        print(f"[HAL-SIGM]::{names}.jpg finished ({idx}/{len(files)})")
+        print(f"[HAL-SIGM]:bar:{idx},{len(files)}:{names}.jpg finished ({idx}/{len(files)})")
 
     """
     The joblib Parallel function is written in this way so that it reuses workers vs. create/destroy.

@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>HerbASAP Lite</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous"></script>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+    <link href='https://fonts.googleapis.com/css?family=Lato:light' rel='stylesheet' type='text/css'/>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="../static/styles/google-css-addon.css">
+    <link rel="stylesheet" href="../static/styles/cayman.css">
+    <link rel="stylesheet" href="../static/styles/stylesheet.css">
+
     <style>
         body {
             padding: 0;
             margin: 0;
             font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 16px;
             line-height: 1.5;
+            font-size: small;
             color: #606c71;
         }
 
@@ -24,7 +36,7 @@
         .left {
             width: 7%;
             background-color: #159957;
-            background-image: linear-gradient(180deg, #155799, #159957);
+            background-image: linear-gradient(180deg, #156499, #15996f);
             text-align: center;
             align-content: center;
             min-height: 100vh;
@@ -33,14 +45,67 @@
         .middle {
             width: 43%;
             min-height: 100vh;
+            max-height: 100vh;
+            background-color: #159957;
+            background-image: linear-gradient(180deg, #156499, #15996f);
+            overflow-y: scroll;
+            padding: 10px;
+            box-sizing: border-box;
+            opacity: 0.9;
+
         }
 
         .right {
             width: 50%;
-            min-height: 80vh;
-            max-height: 80vh;
+            min-height: 100vh;
+            max-height: 100vh;
+
+        }
+
+        #window_controls_div {
+            min-height: 10vh;
+            max-height: 10vh;
+            font-size: 12px;
+            display: flex;
+            width: 100%;
+            margin: auto;
+            justify-content: flex-end;
+
+        }
+
+        .window_button {
+            background-color: white;
+            border: none;
+            color: gray;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        #console_out_div {
+            min-height: 83vh;
+            max-height: 83vh;
             overflow-y: scroll;
             font-family: monospace;
+            font-size: 12px;
+            color: black;
+            padding-left: 10px;
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+
+        #process_div {
+            min-height: 7vh;
+            max-height: 7vh;
+            text-align: center;
+            display: flex;
+            width: 100%;
+            margin: auto;
+            justify-content: flex-end;
+            overflow: hidden;
         }
 
         .row:after {
@@ -49,47 +114,322 @@
             clear: both;
         }
 
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
-            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
-            crossorigin="anonymous"></script>
+        h3 {
+            font-size: 18px;
+            font-family: "Lato";
+            font-weight: normal;
+            opacity: 1;
+        }
 
+        #profile_text {
+            color: white;
+            font-size: 18px;
+            font-family: "Lato";
+            font-weight: bold;
+        }
+
+        h4 {
+            margin: 0 0 0 0;
+            font-size: 18px;
+            font-family: "Lato";
+            font-weight: normal;
+            opacity: 1;
+            color: black;
+        }
+
+        hr {
+            max-width: 100%;
+            border: 1px solid white;
+            opacity: 0.2;
+        }
+
+        progress {
+            width: 100%;
+            background-color: #eee;
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        #title_text {
+            writing-mode: vertical-lr;
+            text-orientation: upright;
+            display: flex;
+            width: 50%;
+            margin: auto;
+            align-items: center;
+            justify-content: center;
+            opacity: 50%;
+            font-family: "Lato";
+        }
+
+        .pywebview-drag-region {
+            height: 100vh;
+        }
+
+        #process_images {
+            padding: 0;
+            margin: 0 0 0 0;
+            color: #91999d;
+            font-size: 32px;
+            text-transform: uppercase;
+            font-weight: 999;
+        }
+
+        #process_images:hover {
+            padding: 0;
+            margin: 0 0 0 0;
+            color: #b81c1c;
+            font-size: 32px;
+            text-transform: uppercase;
+            font-weight: 999;
+        }
+
+        #progress_bg {
+            width: 100vh;
+            height: 10vh;
+            position: relative;
+            overflow: auto;
+            background-color: #d2d2d2;
+            display: flex;
+            margin: auto;
+            justify-content: flex-start;
+        }
+
+        #progress_fg {
+            width: 100vh;
+            height: 10vh;
+            position: relative;
+            overflow: auto;
+            background-color: #b81c1c;
+        }
+
+        .progress_object {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+
+        #processing_text {
+            padding: 0;
+            margin: 0 0 0 0;
+            color: #ffffff;
+            font-size: 30px;
+            text-transform: uppercase;
+            font-weight: 999;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 
 <body>
-<div id="interface">
-    <div class="row">
-        <div class="column left">
-            <br>
-            <img style="max-width: 70%; height: auto;" src="../static/images/icon_a.png" alt="HerbASAP Logo">
-        </div>
-        <div class="column middle">
-            <a href="javascript:;" id="process_images">Process</a>
-        </div>
-        <div class="column right">
-            <p id="consoleout"></p>
+<section class="page-header">
+    <div id="interface">
+        <div class="row">
+            <div class="column left">
+                <div class="pywebview-drag-region">
+                    <br>
+                    <img style="max-width: 70%; height: auto;" src="../static/images/icon_a.png" alt="HerbASAP Logo">
+                    <div id="title_text">
+                        &#x2003;HERBASAP LITE
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="column middle">
+                <div id="profile_selector_div" style="margin: 0 0 0 0;">
+                    <h3>Profile</h3>
+                    <select class="option_select" id="profile_select">
+                        <option class="_option" value="On">Default</option>
+                    </select>
+                </div>
+                <hr>
+
+                <h3>Folders</h3>
+                Input folder: <input id="input_folder"><br>
+
+                Output folder: <input id="output_folder"><br>
+                <br>
+                <hr>
+
+                <h3>Color reference chart (CRC)</h3>
+                Process CRC:
+                <select class="option_select" id="process_crc">
+                    <option class="_option" value="On">On</option>
+                    <option class="_option" value="Off">Off</option>
+                </select><br>
+
+                Correct white balance:
+                <select class="option_select" id="correct_whitebalance">
+                    <option class="_option" value="On">On</option>
+                    <option class="_option" value="Off">Off</option>
+                </select><br>
+
+                Verify rotation:
+                <select class="option_select" id="verify_rotation">
+                    <option class="_option" value="On">On</option>
+                    <option class="_option" value="Off">Off</option>
+                </select><br>
+
+                CRC Location:
+                <select class="option_select" id="crc_location">
+                    <option class="_option" value="Upper right">Upper right</option>
+                    <option class="_option" value="Lower right">Lower right</option>
+                    <option class="_option" value="Upper left">Upper left</option>
+                    <option class="_option" value="Lower left">Lower left</option>
+                </select><br>
+
+                Determine scale:
+                <select class="option_select" id="determine_scale">
+                    <option class="_option" value="On">On</option>
+                    <option class="_option" value="Off">Off</option>
+                </select><br>
+
+                CRC type:
+                <select class="option_select" id="crc_type">
+                    <option class="_option" value="ISA ColorGauge Nano">ISA ColorGauge Nano</option>
+                    <option class="_option" value="Kodak 8">Kodak</option>
+                </select><br>
+
+                Paritition size: <input id="partition_size"><br>
+                <br>
+                <hr>
+
+                <h3>Barcode</h3>
+                Barcode rename:
+                <select class="option_select" id="barcode_rename">
+                    <option class="_option" value="On">On</option>
+                    <option class="_option" value="Off">Off</option>
+                </select>
+                <br>
+                <hr>
+
+                <h3>Blur detection</h3>
+                Detect blur:
+                <select class="option_select" id="detect_blur">
+                    <option class="_option" value="On">On</option>
+                    <option class="_option" value="Off">Off</option>
+                </select><br>
+
+                Blur threshold: <input id="blur_threshold"><br>
+            </div>
+            <div class="column right">
+                <div class="pywebview-drag-region" id="window_controls_div">
+                    <button class="window_button" onClick="minimize()">&#x268A;</button>
+                    <br/>
+                    <button class="window_button" onClick="quit()">&#10006;</button>
+                    <br/>
+                </div>
+                <div id="console_out_div">
+                    <h4>Console Output</h4>
+                    <p id="consoleout">
+                        Welcome to HerbASAP Lite v0.0.1<br>
+                        Click "Process Images" below when you are ready.
+
+                    </p>
+                </div>
+                <div id="process_div">
+                    <a href="javascript:;" type="submit" class="btn" id="process_images"><i>Process Images</i> &#x2771;</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
 </body>
 
 <script>
+    window.addEventListener('pywebviewready', function () {
+        // $('#consoleout').append("PyWebView API is ready.<br>");
+    });
+
+    function quit() {
+        pywebview.api.quit()
+    }
+
+    function minimize() {
+        pywebview.api.minimize()
+    }
+
+
     $(document).ready(function () {
+
 
     });
 
     $('#interface').on('click', '#process_images', function () {
-        var socket = io.connect('http://127.0.0.1:6969/stream')
-        socket.on('message', function (msg) {
-            if (msg.includes("[HAL-DONE]")){
-                socket.disconnect();
+        var process_div = document.getElementById("process_div");
+        // process_div.innerHTML = '<progress id="file" value="0" max="100">0%</progress>';
+        process_div.innerHTML =
+            `
+            <div id="progress_bg">
+                <div id="progress_fg" class="progress_object" style="width:0; height: 100%"></div>
+                <a id="processing_text" class="progress_object" style="width:0; height: 100%"><i>&#x2007;0%</i></a>
+            </div>
+            `
+
+        $.ajax({
+            url: "/dummy",
+            type: "get",
+            async: true,
+            success: function () {
+                var socket = io.connect('http://127.0.0.1:6969/stream')
+
+                socket.on('message', function (msg) {
+                    if (msg.includes("[HAL-DONE]")) {
+                        socket.disconnect();
+                        socket.close();
+                    } else if (msg.includes("[HAL-SIGM]")) {
+                        var msg_data = msg.split(":");
+                        var type = msg_data[1];
+                        var data = msg_data[2];
+                        var print_out = msg_data[3];
+                        var console_out_div = document.getElementById("console_out_div");
+
+                        $('#consoleout').append(print_out + "<br>");
+                        console_out_div.scrollTop = console_out_div.scrollHeight;
+
+                        if (type === "bar") {
+                            var subdata = data.split(",");
+                            var bar_val = parseInt(subdata[0]);
+                            var files_val = parseInt(subdata[1]);
+
+                            var percent = ((bar_val / files_val) * 100).toFixed(2);
+
+
+                            // process_div.innerHTML = '<progress id="file" value="' + String(bar_val) + '" max="' + files_val + '">0%</progress>';
+                            process_div.innerHTML =
+                                `
+                                <div id="progress_bg">
+                                    <div id="progress_fg" class="progress_object" style="width:` + String(percent) + `%; height: 100%"></div>
+                                    <a id="processing_text" class="progress_object" style="width:0; height: 100%"><i>&#x2007;` + String(percent) + `%</i></a>
+                                </div>
+                                `
+                        }
+                    }
+                });
+                socket.emit('message', {data: "start"});
             }
-            else if (msg.includes("[HAL-SIGM]")){
-                $('#consoleout').append(msg + "<br>");
-            }
-        })
-        socket.emit('message', {data: "start"});
+        });
+
     });
 
 </script>
