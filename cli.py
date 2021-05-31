@@ -67,10 +67,10 @@ def process():
     global settings
 
     """
-    Getting number of workers for multiprocessing, minimum 2 workers
+    Getting number of workers for multiprocessing, minimum 3 workers
     """
-    num_workers = max([2, multiprocessing.cpu_count() - 2])
-
+    # num_workers = max([3, multiprocessing.cpu_count() - 2])
+    num_workers = multiprocessing.cpu_count()
     """
     Shaping the data to follow the number of workers for multiprocessing
     """
@@ -268,12 +268,10 @@ def process():
     The joblib Parallel function is written in this way so that it reuses workers vs. create/destroy.
     """
 
-    Parallel(n_jobs=num_workers)(delayed(compute)(idx, file) for idx, file in enumerate(files))
+    # Parallel(n_jobs=num_workers)(delayed(compute)(idx, file) for idx, file in enumerate(files))
 
-    # with Parallel(n_jobs=2, verbose=11) as parallel:
-    #     for idx, file_batch in enumerate(file_batches):
-    #         out = parallel(delayed(compute)(file) for file in file_batch)
-    #         print(idx, len(file_batches))
+    with Parallel(n_jobs=num_workers) as parallel:
+        out = parallel(delayed(compute)(idx, file) for idx, file in enumerate(files))
 
     # for idx, file_batch in enumerate(file_batches):
     #     out = Parallel(n_jobs=num_workers)(delayed(compute)(file) for file in file_batch)

@@ -18,6 +18,11 @@ import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+session_conf = tf.ConfigProto(
+      intra_op_parallelism_threads=1,
+      inter_op_parallelism_threads=1)
+sess = tf.Session(config=session_conf)
+
 # Importing Keras and making sure that Keras uses TensorFlow instead of some other backend.
 import keras
 from keras.models import load_model
