@@ -1,7 +1,7 @@
 
 settings = {
     "input_folder": "C:/Users/Dakila/Pictures/HA/Input",
-    "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
+    "output_folder": "C:/Users/Shawlab/Desktop/Dax Output",
     "process_crc": "T",
     "barcode_rename": "T",
     "barcode_pattern": "",
@@ -22,7 +22,7 @@ def build_menu_string():
     Current settings
         Input folder: {settings["input_folder"]}
         Output folder: {settings["output_folder"]}
-        
+
     Options
         1: Change input folder
         2: Change output folder
