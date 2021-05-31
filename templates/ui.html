@@ -62,32 +62,9 @@
 
         }
 
-        #window_controls_div {
-            min-height: 10vh;
-            max-height: 10vh;
-            font-size: 12px;
-            display: flex;
-            width: 100%;
-            margin: auto;
-            justify-content: flex-end;
-
-        }
-
-        .window_button {
-            background-color: white;
-            border: none;
-            color: gray;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-        }
-
         #console_out_div {
-            min-height: 83vh;
-            max-height: 83vh;
+            min-height: 93vh;
+            max-height: 93vh;
             overflow-y: scroll;
             font-family: monospace;
             font-size: 12px;
@@ -244,15 +221,11 @@
     <div id="interface">
         <div class="row">
             <div class="column left">
-                <div class="pywebview-drag-region">
-                    <br>
-                    <img style="max-width: 70%; height: auto;" src="../static/images/icon_a.png" alt="HerbASAP Logo">
-                    <div id="title_text">
-                        &#x2003;HERBASAP LITE
-                    </div>
+                <br>
+                <img style="max-width: 70%; height: auto;" src="../static/images/icon_a.png" alt="HerbASAP Logo">
+                <div id="title_text">
+                    &#x2003;HERBASAP LITE
                 </div>
-
-
             </div>
             <div class="column middle">
                 <div id="profile_selector_div" style="margin: 0 0 0 0;">
@@ -332,12 +305,6 @@
                 Blur threshold: <input id="blur_threshold"><br>
             </div>
             <div class="column right">
-                <div class="pywebview-drag-region" id="window_controls_div">
-                    <button class="window_button" onClick="minimize()">&#x268A;</button>
-                    <br/>
-                    <button class="window_button" onClick="quit()">&#10006;</button>
-                    <br/>
-                </div>
                 <div id="console_out_div">
                     <h4>Console Output</h4>
                     <p id="consoleout">
@@ -359,20 +326,61 @@
 <script>
     window.addEventListener('pywebviewready', function () {
         // $('#consoleout').append("PyWebView API is ready.<br>");
+        // change_title();
     });
 
     function quit() {
-        pywebview.api.quit()
+        pywebview.api.quit();
     }
 
     function minimize() {
-        pywebview.api.minimize()
+        pywebview.api.minimize();
+    }
+
+    function change_title() {
+        pywebview.api.change_title();
     }
 
 
     $(document).ready(function () {
 
 
+    });
+
+    var socket = io.connect('http://127.0.0.1:6969/stream')
+
+    socket.on('message', function (msg) {
+        if (msg.includes("[HAL-DONE]")) {
+            $('#consoleout').append("Finished task." + "<br>");
+            $('#process_div').innerHTML(`<a href="javascript:;" type="submit" class="btn" id="process_images"><i>Process Images</i> &#x2771;</a>`);
+        } else if (msg.includes("[HAL-SIGM]")) {
+            var msg_data = msg.split(":");
+            var type = msg_data[1];
+            var data = msg_data[2];
+            var print_out = msg_data[3];
+            var console_out_div = document.getElementById("console_out_div");
+
+            $('#consoleout').append(print_out + "<br>");
+            console_out_div.scrollTop = console_out_div.scrollHeight;
+
+            if (type === "bar") {
+                var subdata = data.split(",");
+                var bar_val = parseInt(subdata[0]);
+                var files_val = parseInt(subdata[1]);
+
+                var percent = ((bar_val / files_val) * 100).toFixed(2);
+
+
+                // process_div.innerHTML = '<progress id="file" value="' + String(bar_val) + '" max="' + files_val + '">0%</progress>';
+                process_div.innerHTML =
+                    `
+                                <div id="progress_bg">
+                                    <div id="progress_fg" class="progress_object" style="width:` + String(percent) + `%; height: 100%"></div>
+                                    <a id="processing_text" class="progress_object" style="width:0; height: 100%"><i>&#x2007;` + String(percent) + `%</i></a>
+                                </div>
+                                `
+            }
+        }
     });
 
     $('#interface').on('click', '#process_images', function () {
@@ -386,49 +394,7 @@
             </div>
             `
 
-        $.ajax({
-            url: "/dummy",
-            type: "get",
-            async: true,
-            success: function () {
-                var socket = io.connect('http://127.0.0.1:6969/stream')
-
-                socket.on('message', function (msg) {
-                    if (msg.includes("[HAL-DONE]")) {
-                        socket.disconnect();
-                        socket.close();
-                    } else if (msg.includes("[HAL-SIGM]")) {
-                        var msg_data = msg.split(":");
-                        var type = msg_data[1];
-                        var data = msg_data[2];
-                        var print_out = msg_data[3];
-                        var console_out_div = document.getElementById("console_out_div");
-
-                        $('#consoleout').append(print_out + "<br>");
-                        console_out_div.scrollTop = console_out_div.scrollHeight;
-
-                        if (type === "bar") {
-                            var subdata = data.split(",");
-                            var bar_val = parseInt(subdata[0]);
-                            var files_val = parseInt(subdata[1]);
-
-                            var percent = ((bar_val / files_val) * 100).toFixed(2);
-
-
-                            // process_div.innerHTML = '<progress id="file" value="' + String(bar_val) + '" max="' + files_val + '">0%</progress>';
-                            process_div.innerHTML =
-                                `
-                                <div id="progress_bg">
-                                    <div id="progress_fg" class="progress_object" style="width:` + String(percent) + `%; height: 100%"></div>
-                                    <a id="processing_text" class="progress_object" style="width:0; height: 100%"><i>&#x2007;` + String(percent) + `%</i></a>
-                                </div>
-                                `
-                        }
-                    }
-                });
-                socket.emit('message', {data: "start"});
-            }
-        });
+        socket.emit('message', {data: "start"});
 
     });
 

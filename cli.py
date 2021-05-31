@@ -69,15 +69,13 @@ def process():
     """
     Getting number of workers for multiprocessing, minimum 3 workers
     """
-    # num_workers = max([3, multiprocessing.cpu_count() - 2])
-    num_workers = multiprocessing.cpu_count()
+    num_workers = max([3, multiprocessing.cpu_count()])
+
     """
     Shaping the data to follow the number of workers for multiprocessing
     """
     files = glob(f'{settings["input_folder"]}/*.CR2')
     print(f"Found {len(files)} file(s)")
-
-
 
     # file_batches = []
     # while True:
@@ -265,7 +263,7 @@ def process():
         print(f"[HAL-SIGM]:bar:{idx},{len(files)}:{names}.jpg finished ({idx}/{len(files)})")
 
     """
-    The joblib Parallel function is written in this way so that it reuses workers vs. create/destroy.
+    The joblib Parallel function is written in this way so that it reuses wPorkers vs. create/destroy.
     """
 
     # Parallel(n_jobs=num_workers)(delayed(compute)(idx, file) for idx, file in enumerate(files))
@@ -280,6 +278,7 @@ def process():
     #     print(idx, len(file_batches))
 
     print(f"[HAL-DONE]")
+
 
 if __name__ == "__main__":
     import argparse
@@ -310,6 +309,7 @@ if __name__ == "__main__":
         cli_print(build_menu_string(), running_interface=running_interface)
         if running_interface:
             process()
+            break
         else:
             _input = str(input("What would you like to do?: ")).upper()
 
