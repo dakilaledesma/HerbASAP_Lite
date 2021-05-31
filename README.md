@@ -1,6 +1,6 @@
 # HerbASAP Lite
 
-![HerbASAP Lite Window](https://imgur.com/eYVc9IQ.png)
+![HerbASAP Lite Window](https://imgur.com/1GEPJG2.gif)
 
 
 This repository contains a much faster version of HerbASAP that is made for batch processing of already taken images rather than processing in real-time. This version is much better tuned for multiprocessing and tries to be less dependent on certain libraries to reduce bulk, increase platform compatibility (such as ARM/Apple Silicon), and minimize the codebase for debugging.
