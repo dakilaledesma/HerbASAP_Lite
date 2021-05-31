@@ -12,6 +12,7 @@ HerbASAP Lite is *not* meant to replace HerbASAP, but rather serve a different p
 - It loses:
   - Real-time processing of images as you take them from the camera.
   - A "proper" GUI via PyQT5 with viewing processed images as you take them.
+  - GPU inferencing support (for ColorNet)
 - To gain:
   - Significant speed up in batch processing.
   - A CLI-friendly script you can run in headless machines that does all of the backend processing.
@@ -20,11 +21,21 @@ HerbASAP Lite is *not* meant to replace HerbASAP, but rather serve a different p
 
 
 ## How much faster is HerbASAP Lite for batch processing? 
-| HerbASAP | HerbASAP Lite | Speedup |
-|---|---|---|
-| 3m:08.56s | 54.98s | 3.43x faster |
 
 Tested:
   - 50 RAW Files
-  - 18 threads
   - All functions enabled except lens correction
+
+| Name | Time | Specs |
+|---|---|---|
+| HerbASAP Lite | 54.98s | Core i9-7900X @ 18 workers
+| HerbASAP | 3m:08.56s | Core i9-7900X @ 15 workers + Nvidia 1080Ti
+| Speedup | 3.43x faster | |
+
+| Name | Time | Specs |
+|---|---|---|
+| HerbASAP Lite | 2m:36.05s | Core i7-8550U @ 6 workers
+| HerbASAP | 4m:17.35s | Core i7-8550U @ 6 workers + Nvidia MX150
+| Speedup | 1.64x faster | |
+
+
