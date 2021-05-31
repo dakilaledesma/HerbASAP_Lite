@@ -63,8 +63,7 @@ def read_settings():
         settings = json.load(json_file)
 
 
-def process():
-    global settings
+def process(settings):
 
     """
     Getting number of workers for multiprocessing, minimum 3 workers
@@ -88,7 +87,7 @@ def process():
     #     file_batches.append(files[:num_workers])
     #     del files[:num_workers]
 
-    def compute(idx, file):
+    def compute(idx, file, settings):
         """
         Function for computing/processing the images. This function gets fed into joblib, which gives this function to
         different threads on the CPU. This allows for multiple images to be processed at once.
@@ -269,7 +268,7 @@ def process():
     # Parallel(n_jobs=num_workers)(delayed(compute)(idx, file) for idx, file in enumerate(files))
 
     with Parallel(n_jobs=num_workers) as parallel:
-        out = parallel(delayed(compute)(idx, file) for idx, file in enumerate(files))
+        out = parallel(delayed(compute)(idx, file, settings) for idx, file in enumerate(files))
 
     # for idx, file_batch in enumerate(file_batches):
     #     out = Parallel(n_jobs=num_workers)(delayed(compute)(file) for file in file_batch)
@@ -308,7 +307,7 @@ if __name__ == "__main__":
         # read_settings()
         cli_print(build_menu_string(), running_interface=running_interface)
         if running_interface:
-            process()
+            process(settings)
             break
         else:
             _input = str(input("What would you like to do?: ")).upper()
@@ -318,7 +317,7 @@ if __name__ == "__main__":
             elif _input == 'R':
                 continue
             elif _input == 'P':
-                process()
+                process(settings)
             elif _input in [str(v) for v in range(1, 3)]:
                 if _input == '1':
                     root = tk.Tk()
