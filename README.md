@@ -1,9 +1,14 @@
 # HerbASAP Lite
 
-![HerbASAP Lite Window](https://imgur.com/1GEPJG2.gif)
+### HerbASAP Lite may be run in multiple formats:
 
 
-This repository contains a much faster version of HerbASAP that is made for batch processing of already taken images rather than processing in real-time. This version is much better tuned for multiprocessing and tries to be less dependent on certain libraries to reduce bulk, increase platform compatibility (such as ARM/Apple Silicon), and minimize the codebase for debugging.
+| As a standalone program | ...or even online for free |
+| --- | --- |
+| ![HerbASAP Lite Window](https://imgur.com/1GEPJG2.gif) | ![HerbASAP Lite Colab](https://imgur.com/Ww2hZD6.gif) |
+
+
+This repository contains a much faster version of HerbASAP that is made for batch and headless processing of already taken images rather than processing in real-time. This version is much better tuned for multiprocessing and tries to be less dependent on certain libraries to reduce bulk, increase platform compatibility (such as ARM/Apple Silicon or running on online platforms such as Google Colab), and minimize the codebase for debugging.
 
 HerbASAP Lite is *not* meant to replace HerbASAP, but rather serve a different purpose while being much less buggy and easier to maintain.
 
@@ -16,6 +21,7 @@ HerbASAP Lite is *not* meant to replace HerbASAP, but rather serve a different p
 - To gain:
   - Significant speed up in batch processing.
   - A CLI-friendly script you can run in headless machines that does all of the backend processing.
+    - May be run within servers or even on online platforms such as Google Colab 
   - A simpler HTML5 interface that is *completely* separate from the CLI/backend script, allowing for extension of the interface without messing with the backend.
   - Much easier to maintain and less buggy codebase at less than 1/3rd of the main "master" script.
 
