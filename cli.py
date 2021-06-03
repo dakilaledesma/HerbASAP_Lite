@@ -1,7 +1,7 @@
 
 settings = {
-    "input_folder": "C:/Users/Dakila/Pictures/HA/Input",
-    "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
+    "input_folder": "/content/drive/MyDrive/Shaw/HerbASAP Lite/test_folder",
+    "output_folder": "/content/HA_Output",
     "process_crc": "T",
     "barcode_rename": "T",
     "barcode_pattern": "",
@@ -310,22 +310,4 @@ if __name__ == "__main__":
             process(settings)
             break
         else:
-            _input = str(input("What would you like to do?: ")).upper()
-
-            if _input == 'Q':
-                break
-            elif _input == 'R':
-                continue
-            elif _input == 'P':
-                process(settings)
-            elif _input in [str(v) for v in range(1, 3)]:
-                if _input == '1':
-                    root = tk.Tk()
-                    set_input_folder()
-                    root.destroy()
-                elif _input == '2':
-                    root = tk.Tk()
-                    set_output_folder()
-                    root.destroy()
-
-                # write_settings()
+            process(settings)
