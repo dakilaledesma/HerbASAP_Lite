@@ -3,7 +3,7 @@
 ### HerbASAP Lite may be run in multiple formats:
 
 
-| As a standalone program | ...or even online for free |
+| As a standalone program | ...or even online for free (proof of concept code: [Google Colab Notebook](https://colab.research.google.com/drive/10KKkkNkTW3rOWyzJdD5XkiKmUJfdSJAy?usp=sharing))|
 | --- | --- |
 | ![HerbASAP Lite Window](https://imgur.com/1GEPJG2.gif) | ![HerbASAP Lite Colab](https://imgur.com/Ww2hZD6.gif) |
 
