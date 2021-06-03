@@ -259,7 +259,7 @@ def process(settings):
         cv2.imwrite(final_filename, im)
         # read_metadata.set_dst_exif(meta_data, final_filename)
 
-        print(f"[HAL-SIGM]:bar:{idx},{len(files)}:{names}.jpg finished ({idx}/{len(files)})")
+        # print(f"[HAL-SIGM]:bar:{idx},{len(files)}:{names}.jpg finished ({idx}/{len(files)})")
 
     """
     The joblib Parallel function is written in this way so that it reuses wPorkers vs. create/destroy.
@@ -268,7 +268,7 @@ def process(settings):
     # Parallel(n_jobs=num_workers)(delayed(compute)(idx, file) for idx, file in enumerate(files))
 
     with Parallel(n_jobs=num_workers) as parallel:
-        out = parallel(delayed(compute)(idx, file, settings) for idx, file in enumerate(files))
+        out = parallel(delayed(compute)(idx, file, settings) for idx, file in tqdm(enumerate(files)))
 
     # for idx, file_batch in enumerate(file_batches):
     #     out = Parallel(n_jobs=num_workers)(delayed(compute)(file) for file in file_batch)
@@ -301,13 +301,7 @@ if __name__ == "__main__":
     from libs.scaleRead import ScaleRead
     from libs.metaRead import MetaRead
     from libs.helper_functions import *
+    from tqdm import tqdm
     cli_print("Welcome to HerbASAP Lite v0.0.1", running_interface=running_interface)
 
-    while True:
-        # read_settings()
-        cli_print(build_menu_string(), running_interface=running_interface)
-        if running_interface:
-            process(settings)
-            break
-        else:
-            process(settings)
+    process(settings)
