@@ -2,7 +2,6 @@ flask
 flask-socketio
 pywebview
 joblib
-tensorflow==1.*
 keras==2.2.4
 h5py<3.0.0
 lensfunpy==1.6.1
