@@ -22,7 +22,7 @@ def build_menu_string():
     return out_string
 
 
-def process():
+def process(gui_interface=False):
     settings = read_settings()
     files = glob(f'{settings["input_folder"]}/*.CR2')
 
@@ -31,21 +31,27 @@ def process():
 
     # joblib synchronous processing. Async through subprocess actually not much faster.
     out = Parallel(n_jobs=num_workers, verbose=9)(
-        delayed(compute)(idx, file, settings) for idx, file in enumerate(files))
+        delayed(compute)(file, settings, gui_interface, len(files)) for idx, file in enumerate(files))
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description='CLI/Interface Parser')
-    # parser.add_argument('--interface', dest='interface', action='store_true')
-    # parser.set_defaults(interface=False)
+    parser = argparse.ArgumentParser(description='CLI/Interface Parser')
+    parser.add_argument('--gui_interface', dest='gui_interface', action='store_true')
+    parser.set_defaults(gui_interface=False)
 
-    while True:
-        print(build_menu_string())
-        _input = str(input("What would you like to do?: ")).upper()
+    parsed_args = parser.parse_args()
+    gui_interface = parsed_args.gui_interface
 
-        if _input == 'Q':
-            break
-        elif _input == 'R':
+    if gui_interface:
+        process(gui_interface=True)
+    else:
+        while True:
             print(build_menu_string())
-        elif _input == 'P':
-            process()
+            _input = str(input("What would you like to do?: ")).upper()
+
+            if _input == 'Q':
+                break
+            elif _input == 'R':
+                print(build_menu_string())
+            elif _input == 'P':
+                process()

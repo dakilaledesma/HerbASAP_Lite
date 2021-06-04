@@ -42,7 +42,7 @@ def read_settings() -> dict:
     return settings
 
 
-def compute(idx, file, settings, interface=False, len_files=0):
+def compute(file, settings, gui_interface=False, len_files=0):
     """
     Function for computing/processing the images. This function gets fed into joblib, which gives this function to
     different threads on the CPU. This allows for multiple images to be processed at once.
@@ -212,7 +212,15 @@ def compute(idx, file, settings, interface=False, len_files=0):
     cv2.imwrite(final_filename, im)
     # read_metadata.set_dst_exif(meta_data, final_filename)
 
-    if interface:
-        print(f"[HAL-SIGM]:bar:{idx},{len_files}:{names}.jpg finished")
+    if gui_interface:
+        print(f"[HAL-SIGM]:bar:{len_files}:{names}.jpg finished")
 
     return
+
+if __name__ == "__main__":
+    # parser = argparse.ArgumentParser(description='CLI/Interface Parser')
+    # parser.add_argument('--interface', dest='interface', action='store_true')
+    # parser.set_defaults(interface=False)
+    settings = read_settings()
+
+    compute(file, settings)

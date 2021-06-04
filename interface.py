@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send
+from backend import *
+from joblib import Parallel, delayed
 import subprocess
 import atexit
 import flask
@@ -66,7 +68,7 @@ def index():
 def stream(cmd):
     global process_id
 
-    popen = subprocess.Popen("python -u cli.py --interface", stdout=subprocess.PIPE, universal_newlines=True)
+    popen = subprocess.Popen("python -u cli.py --gui_interface", stdout=subprocess.PIPE, universal_newlines=True)
     process_id = popen
 
     unique_images_processed = set()
@@ -74,7 +76,7 @@ def stream(cmd):
         print(stdout_line)
         if "[HAL-SIGM]:bar:" in stdout_line:
             subdata = stdout_line.split(":")
-            files_val = subdata[2].split(",")[1]
+            files_val = subdata[2]
             ret_vals = f"{len(unique_images_processed) + 1},{files_val}"
             subdata[2] = ret_vals
 
