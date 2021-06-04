@@ -1,37 +1,15 @@
+import json
+from joblib import Parallel, delayed
+from glob import glob
+import multiprocessing
+import os
 
-settings = {
-    "input_folder": "C:/Users/Dakila/Pictures/HA/Input",
-    "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
-    "process_crc": "T",
-    "barcode_rename": "T",
-    "barcode_pattern": "",
-    "detect_blur": "T",
-    "blur_threshold": "0.045",
-    "determine_scale": "T",
-    "verify_rotation": "T",
-    "correct_whitebalance": "T",
-    "crc_type": "ISA ColorGauge Nano",
-    "partition_size": "125",
-    "crc_location": "Lower right"
-}
-
-
-def build_menu_string():
-    global settings
-    out_string = f"""
-    Current settings
-        Input folder: {settings["input_folder"]}
-        Output folder: {settings["output_folder"]}
-        
-    Options
-        1: Change input folder
-        2: Change output folder
-        P: Process
-        R: Refresh configuration from file
-        Q: Quit
-    """
-
-    return out_string
+from libs.bcRead import bcRead
+from libs.blurDetect import blurDetect
+from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
+from libs.scaleRead import ScaleRead
+from libs.metaRead import MetaRead
+from libs.helper_functions import *
 
 
 def cli_print(message, running_interface=True):
@@ -39,31 +17,33 @@ def cli_print(message, running_interface=True):
         print(message)
 
 
-def set_input_folder():
-    global settings
-    input_folder = filedialog.askdirectory()
-    settings["input_folder"] = input_folder
+def set_input_folder(folder: str):
+    set_settings("input_folder", folder)
 
 
-def set_output_folder():
-    global settings
-    output_folder = filedialog.askdirectory()
-    settings["output_folder"] = output_folder
+def set_output_folder(folder: str):
+    set_settings("output_folder", folder)
 
 
-def write_settings():
-    global settings
+def set_settings(key: str, value: str):
+    settings = read_settings()
+    settings[key] = value
+    write_settings(settings)
+
+
+def write_settings(settings: dict):
     with open("config/config.json", 'w') as out_file:
         json.dump(settings, out_file, indent=4, sort_keys=True)
 
 
-def read_settings():
-    global settings
+def read_settings() -> dict:
     with open("config/config.json") as json_file:
         settings = json.load(json_file)
+    return settings
 
 
-def process(settings):
+def process(interface=False):
+    settings = read_settings()
 
     """
     Getting number of workers for multiprocessing, minimum 3 workers
@@ -160,7 +140,8 @@ def process(settings):
                                                                                           patch_mm_area,
                                                                                           seed_func,
                                                                                           to_crop)
-                    print(f"Pixels per mm for {file_name}: {pixels_per_mm}, +/- {pixels_per_mm_uncertainty}")
+
+                    # print(f"Pixels per mm for {file_name}: {pixels_per_mm}, +/- {pixels_per_mm_uncertainty}")
 
                 cc_quadrant = crc_processing.predict_color_chip_quadrant(original_size, cc_location)
 
@@ -248,66 +229,13 @@ def process(settings):
         cv2.imwrite(final_filename, im)
         # read_metadata.set_dst_exif(meta_data, final_filename)
 
-        print(f"[HAL-SIGM]:bar:{idx},{len(files)}:{names}.jpg finished ({idx}/{len(files)})")
+        if interface:
+            print(f"[HAL-SIGM]:bar:{idx},{len(files)}:{names}.jpg finished")
 
     """
-    joblib synchronous processing
+    joblib synchronous processing. Async through subprocess actually not much faster.
     """
     with Parallel(n_jobs=num_workers) as parallel:
         out = parallel(delayed(compute)(idx, file, settings) for idx, file in enumerate(files))
 
-
     print(f"[HAL-DONE]")
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description='CLI/Interface Parser')
-    parser.add_argument('--interface', dest='interface', action='store_true')
-    parser.set_defaults(interface=False)
-
-    parsed_args = parser.parse_args()
-    running_interface = parsed_args.interface
-
-    cli_print("Loading...", running_interface=running_interface)
-    import json
-    from joblib import Parallel, delayed
-    from glob import glob
-    import multiprocessing
-    import os
-
-    from libs.bcRead import bcRead
-    from libs.blurDetect import blurDetect
-    from libs.ccRead import ColorchipRead, ColorChipError, SquareFindingFailed
-    from libs.scaleRead import ScaleRead
-    from libs.metaRead import MetaRead
-    from libs.helper_functions import *
-    cli_print("Welcome to HerbASAP Lite v0.0.1", running_interface=running_interface)
-    write_settings()
-
-    while True:
-        # read_settings()
-        cli_print(build_menu_string(), running_interface=running_interface)
-        if running_interface:
-            process(settings)
-            break
-        else:
-            _input = str(input("What would you like to do?: ")).upper()
-
-            if _input == 'Q':
-                break
-            elif _input == 'R':
-                continue
-            elif _input == 'P':
-                process(settings)
-            elif _input in [str(v) for v in range(1, 3)]:
-                if _input == '1':
-                    root = tk.Tk()
-                    set_input_folder()
-                    root.destroy()
-                elif _input == '2':
-                    root = tk.Tk()
-                    set_output_folder()
-                    root.destroy()
-
-                # write_settings()
