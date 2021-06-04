@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image, ImageEnhance
 import cv2
 import time
-from os import path, environ
+from os import path, environ, devnull
 import sys
 
 # Importing TensorFlow within debug messages
@@ -25,14 +25,18 @@ sess = tf.Session(config=session_conf)
 
 
 # Importing Keras and making sure that Keras uses TensorFlow instead of some other backend.
+# Following stderr code surpresses the "Using Tensorflow backend." output as shown by Keras
+stderr = sys.stderr
+sys.stderr = open(devnull, 'w')
 import keras
 from keras.models import load_model
 from keras import backend as K
+
 if K.backend() != 'tensorflow':
     raise RuntimeError(f"Please set your keras.json to use TensorFlow. It is currently using {keras.backend.backend()}")
 # from libs.settingsWizard import ImageDialog
 from libs.models.keras_frcnn.useFRCNN import process_image_frcnn
-
+sys.stderr = stderr
 
 class ColorChipError(Exception):
     def __init__(self, msg='ColorChipError', *args, **kwargs):
