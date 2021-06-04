@@ -1,1 +1,15 @@
-{"input_folder": "D:/bruh", "output_folder": "C:/Users/Dakila/Pictures/HA/Output"}
+{
+    "barcode_pattern": "",
+    "barcode_rename": "T",
+    "blur_threshold": "0.045",
+    "correct_whitebalance": "T",
+    "crc_location": "Lower right",
+    "crc_type": "ISA ColorGauge Nano",
+    "detect_blur": "T",
+    "determine_scale": "T",
+    "input_folder": "C:/Users/Dakila/Pictures/HA/Input",
+    "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
+    "partition_size": "125",
+    "process_crc": "T",
+    "verify_rotation": "T"
+}

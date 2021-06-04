@@ -54,7 +54,7 @@ def set_output_folder():
 def write_settings():
     global settings
     with open("config/config.json", 'w') as out_file:
-        json.dump(settings, out_file)
+        json.dump(settings, out_file, indent=4, sort_keys=True)
 
 
 def read_settings():
@@ -283,6 +283,7 @@ if __name__ == "__main__":
     from libs.metaRead import MetaRead
     from libs.helper_functions import *
     cli_print("Welcome to HerbASAP Lite v0.0.1", running_interface=running_interface)
+    write_settings()
 
     while True:
         # read_settings()
