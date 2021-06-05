@@ -13,6 +13,18 @@ This repository contains a much faster version of HerbASAP that is made for batc
 HerbASAP Lite is *not* meant to replace HerbASAP, but rather serve a different purpose while being much less buggy and easier to maintain.
 
 
+## Current usage (Windows)
+Executables have not been built yet. In order to use HA Lite, please do the following: 
+
+1. Install Anaconda or Miniconda
+2. Clone this repository
+3. Using Anaconda PowerShell Prompt or your terminal, `cd` into the repo.
+4. `conda env create -f conda_environment.yml`
+5. `conda activate HAL`
+6. Do one of the following:
+  - For the CLI: `python -u cli.py [args]`
+  - For the GUI interface `python -u interface.py`
+
 ## Compared to normal HerbASAP
 - It loses:
   - Real-time processing of images as you take them from the camera.
