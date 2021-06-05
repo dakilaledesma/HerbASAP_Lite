@@ -324,29 +324,6 @@
 </body>
 
 <script>
-    window.addEventListener('pywebviewready', function () {
-        // $('#consoleout').append("PyWebView API is ready.<br>");
-        // change_title();
-    });
-
-    function quit() {
-        pywebview.api.quit();
-    }
-
-    function minimize() {
-        pywebview.api.minimize();
-    }
-
-    function change_title() {
-        pywebview.api.change_title();
-    }
-
-
-    $(document).ready(function () {
-
-
-    });
-
     var socket = io.connect('http://127.0.0.1:6969/stream')
 
     socket.on('message', function (msg) {

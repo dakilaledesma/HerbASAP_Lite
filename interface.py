@@ -1,17 +1,12 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send
-from backend import *
-from joblib import Parallel, delayed
 import subprocess
 import atexit
-import flask
 import os
 import signal
 import webview
 import sys
 import threading
-import time
-import io
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -19,44 +14,16 @@ socketio = SocketIO(app)
 
 process_id = None
 
-class Api:
-    def __init__(self):
-        self._window = None
-
-    def set_window(self, window):
-        self._window = window
-
-    def quit(self):
-        window.destroy()
-
-    def minimize(self):
-        window.minimize()
-
-    def change_title(self):
-        """changes title every 3 seconds"""
-        popen = subprocess.Popen("python -u cli.py --interface", stdout=subprocess.PIPE, universal_newlines=True)
-
-        unique_images_processed = set()
-        for stdout_line in iter(popen.stdout.readline, ""):
-            window.set_title(stdout_line)
-
-        popen.stdout.close()
-        return_code = popen.wait()
-        popen.kill()
-        del popen
-
-        # for i in range(1, 100):
-        #     time.sleep(1)
-        #     window.set_title('New Title #{}'.format(i))
-
 
 def kill():
     global process_id
-    try:
-        os.killpg(os.getpgid(process_id.pid), signal.SIGTERM)
-    except AttributeError:
-        os.kill(process_id.pid, signal.CTRL_C_EVENT)
-    process_id.kill()
+
+    if process_id is not None:
+        try:
+            os.killpg(os.getpgid(process_id.pid), signal.SIGTERM)
+        except AttributeError:
+            os.kill(process_id.pid, signal.CTRL_C_EVENT)
+        process_id.kill()
 
 
 @app.route('/')
@@ -104,11 +71,9 @@ if __name__ == '__main__':
     t.daemon = True
     t.start()
 
-    api = Api()
-    window = webview.create_window("", "http://127.0.0.1:6969/", min_size=(800, 600), js_api=api)
+    window = webview.create_window("", "http://127.0.0.1:6969/", min_size=(800, 600))
     window.closing += kill
     webview.start(debug=True)
-    api.set_window(window)
 
     atexit.register(kill)
 

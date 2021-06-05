@@ -32,17 +32,28 @@ def set_settings(key: str, value: str):
 
 
 def write_settings(settings: dict):
-    with open("config/config.json", 'w') as out_file:
+    with open("../config/config.json", 'w') as out_file:
         json.dump(settings, out_file, indent=4, sort_keys=True)
 
 
 def read_settings() -> dict:
-    with open("config/config.json") as json_file:
+    with open("../config/config.json") as json_file:
         settings = json.load(json_file)
     return settings
 
 
-def compute(file, settings, gui_interface=False, len_files=0):
+def process(settings: dict, gui_interface=False):
+    files = glob(f'{settings["input_folder"]}/*.CR2')
+
+    # Getting number of workers for multiprocessing, minimum 3 workers
+    num_workers = max([3, multiprocessing.cpu_count()])
+
+    # joblib synchronous processing. Async through subprocess actually not much faster.
+    out = Parallel(n_jobs=num_workers, verbose=9)(
+        delayed(compute)(file, settings, gui_interface, len(files)) for idx, file in enumerate(files))
+
+
+def compute(file: str, settings: dict, gui_interface=False, len_files=0) -> None:
     """
     Function for computing/processing the images. This function gets fed into joblib, which gives this function to
     different threads on the CPU. This allows for multiple images to be processed at once.
@@ -216,11 +227,3 @@ def compute(file, settings, gui_interface=False, len_files=0):
         print(f"[HAL-SIGM]:bar:{len_files}:{names}.jpg finished")
 
     return
-
-if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description='CLI/Interface Parser')
-    # parser.add_argument('--interface', dest='interface', action='store_true')
-    # parser.set_defaults(interface=False)
-    settings = read_settings()
-
-    compute(file, settings)
