@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send
+import flask
+from glob import glob
 import subprocess
 import atexit
 import os
@@ -7,6 +9,7 @@ import signal
 import webview
 import sys
 import threading
+import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -29,6 +32,26 @@ def kill():
 @app.route('/')
 def index():
     return render_template('ui.html')
+
+
+@app.route('/get_profiles')
+def get_profiles():
+    files = glob("config/*.json")
+    files = [os.path.splitext(f)[0] for f in files]
+
+    return flask.jsonify({"files": ','.join(files)})
+
+
+@app.route('/read_settings')
+def read_settings():
+    with open("static/settings/interface_settings.json") as json_file:
+        settings_json = json.load(json_file)
+
+    profile = settings_json["current_profile"]
+
+    with open(f"config/{profile}.json") as json_file:
+        settings_json = json.load(json_file)
+
 
 
 @socketio.on('message', namespace='/stream')

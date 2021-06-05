@@ -13,3 +13,4 @@ if __name__ == "__main__":
 
     settings = read_settings(config_file)
     process(settings=settings, gui_interface=True)
+    print("[HAL-DONE]")
