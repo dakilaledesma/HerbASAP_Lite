@@ -35,7 +35,7 @@ def index():
 def stream(cmd):
     global process_id
 
-    popen = subprocess.Popen("python -u cli.py --gui_interface", stdout=subprocess.PIPE, universal_newlines=True)
+    popen = subprocess.Popen("python -u libs/interface_helper.py --config_file config/Default.json", stdout=subprocess.PIPE, universal_newlines=True)
     process_id = popen
 
     unique_images_processed = set()
@@ -75,6 +75,6 @@ if __name__ == '__main__':
     window.closing += kill
     webview.start(debug=True)
 
+    # To kill any process spawned that is separate from the interface, e.g. joblib-related processes
     atexit.register(kill)
-
     sys.exit()

@@ -12,36 +12,6 @@ from libs.metaRead import MetaRead
 from libs.helper_functions import *
 
 
-def cli_print(message, running_interface=True):
-    if not running_interface:
-        print(message)
-
-
-def set_input_folder(folder: str):
-    set_settings("input_folder", folder)
-
-
-def set_output_folder(folder: str):
-    set_settings("output_folder", folder)
-
-
-def set_settings(key: str, value: str):
-    settings = read_settings()
-    settings[key] = value
-    write_settings(settings)
-
-
-def write_settings(settings: dict):
-    with open("../config/config.json", 'w') as out_file:
-        json.dump(settings, out_file, indent=4, sort_keys=True)
-
-
-def read_settings() -> dict:
-    with open("../config/config.json") as json_file:
-        settings = json.load(json_file)
-    return settings
-
-
 def process(settings: dict, gui_interface=False):
     files = glob(f'{settings["input_folder"]}/*.CR2')
 
