@@ -6,10 +6,10 @@
     "crc_location": "Lower right",
     "crc_type": "ISA ColorGauge Nano",
     "detect_blur": "T",
-    "determine_scale": "T",
-    "input_folder": "C:/Users/Dakila/Pictures/HA/Input",
-    "output_folder": "C:/Users/Dakila/Pictures/HA/Output2",
+    "determine_scale": "F",
+    "input_folder": "/Users/dakilaledesma/Pictures/HA/Input",
+    "output_folder": "/Users/dakilaledesma/Pictures/HA/Output2",
     "partition_size": "125",
-    "process_crc": "T",
-    "verify_rotation": "T"
+    "process_crc": "F",
+    "verify_rotation": "F"
 }
