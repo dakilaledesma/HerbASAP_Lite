@@ -3,7 +3,7 @@
 ### HerbASAP Lite may be run in multiple formats:
 
 
-| As a standalone program | ...or even online for free (proof of concept code: [Google Colab Notebook](https://colab.research.google.com/drive/10KKkkNkTW3rOWyzJdD5XkiKmUJfdSJAy?usp=sharing))|
+| As a standalone program (with preliminary native Apple Silicon support) | ...or even online for free (proof of concept code: [Google Colab Notebook](https://colab.research.google.com/drive/10KKkkNkTW3rOWyzJdD5XkiKmUJfdSJAy?usp=sharing))|
 | --- | --- |
 | ![HerbASAP Lite Window](https://imgur.com/1GEPJG2.gif) | ![HerbASAP Lite Colab](https://imgur.com/Ww2hZD6.gif) |
 
@@ -36,6 +36,7 @@ Executables have not been built yet. In order to use HA Lite, please do the foll
     - May be run within servers or even on online platforms such as Google Colab 
   - A simpler HTML5 interface that is *completely* separate from the CLI/backend script, allowing for extension of the interface without messing with the backend.
   - Much easier to maintain and less buggy codebase at less than 1/3rd of the main "master" script.
+  - Higher cross-compatibility support due to less libraries being needed. For example, an initial build works natively with Apple Silicon - see the "apple_silicon" branch
 
 
 ## How much faster is HerbASAP Lite for batch processing? 
@@ -55,5 +56,16 @@ Tested:
 | HerbASAP Lite | 2m:36.05s | Core i7-8550U @ 6 workers
 | HerbASAP | 4m:17.35s | Core i7-8550U @ 6 workers + Nvidia MX150
 | Speedup | 1.64x faster | |
+
+
+## Apple Silicon Comparison
+  - 50 RAW Files
+  - All functions enabled except lens correction and TensorFlow (TF2 not compatible with ColorNet)
+
+| Processor Name | Time | Specs |
+|---|---|---|
+| Intel Core i9-7900X | 14.2s | 10C/20T @ 20 workers
+| Intel Core i7-8550U | 38.0s | 4C/8T @ 8 workers
+| Apple Silicon M1 | 15.2s | 8C/8T @ 8 workers (fanless, MacBook Air late 2020)
 
 
