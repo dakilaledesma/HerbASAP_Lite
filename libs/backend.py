@@ -13,7 +13,7 @@ from libs.helper_functions import *
 
 
 def process(settings: dict, gui_interface=False):
-    files = glob(f'{settings["input_folder"]}/*.CR2')
+    files = glob(f'{settings["input_folder"]}/**/*.CR2', recursive=True)
 
     # Getting number of workers for multiprocessing, minimum 3 workers
     num_workers = max([3, multiprocessing.cpu_count()])
